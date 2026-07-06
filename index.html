@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>➕ Quiz de Somar</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            min-height: 100vh;
+            background: linear-gradient(145deg, #2b3a67 0%, #1d2b4a 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .quiz-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(4px);
+            max-width: 650px;
+            width: 100%;
+            padding: 2rem 2.2rem;
+            border-radius: 56px;
+            box-shadow: 0 25px 40px -8px rgba(0, 0, 0, 0.6), 0 8px 20px rgba(0,0,0,0.3);
+            transition: transform 0.2s ease;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #0f1a2f;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 0.25rem;
+            letter-spacing: -0.5px;
+        }
+        h1 small {
+            font-size: 1rem;
+            font-weight: 400;
+            background: #eef3ff;
+            color: #1f3a6b;
+            padding: 0 16px;
+            border-radius: 40px;
+            line-height: 2rem;
+            margin-left: 8px;
+        }
+        .subhead {
+            color: #3e4f72;
+            font-weight: 500;
+            border-left: 5px solid #ffb347;
+            padding-left: 16px;
+            margin: 8px 0 24px 0;
+            font-size: 1.05rem;
+            background: #f0f5ff;
+            border-radius: 0 40px 40px 0;
+            line-height: 2.4rem;
+            padding-right: 20px;
+            display: inline-block;
+        }
+        .question-box {
+            background: #f2f7ff;
+            border-radius: 40px;
+            padding: 28px 20px;
+            margin: 16px 0 24px 0;
+            box-shadow: inset 0 4px 8px rgba(0,0,0,0.02), 0 6px 12px rgba(0, 20, 40, 0.08);
+            border: 1px solid #dce6f5;
+        }
+        .expression {
+            font-size: 3.3rem;
+            font-weight: 700;
+            text-align: center;
+            color: #0b1a33;
+            letter-spacing: 4px;
+            word-break: break-word;
+            background: white;
+            padding: 20px 12px;
+            border-radius: 60px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+        }
+        .expression span {
+            color: #2b5b9e;
+            margin: 0 4px;
+        }
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+            margin: 28px 0 24px;
+        }
+        .option-btn {
+            background: white;
+            border: 2px solid #d0ddea;
+            border-radius: 60px;
+            padding: 16px 6px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #13203b;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            box-shadow: 0 4px 0 #b0c2db;
+            text-align: center;
+            letter-spacing: 1px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 6px;
+        }
+        .option-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            border-color: #6d8fc9;
+            box-shadow: 0 6px 0 #8ca3cc;
+            background: #f6faff;
+        }
+        .option-btn:active:not(:disabled) {
+            transform: translateY(4px);
+            box-shadow: 0 1px 0 #8ca3cc;
+        }
+        .option-btn.correct {
+            background: #2b7d3b;
+            border-color: #1b5a28;
+            color: white;
+            box-shadow: 0 4px 0 #13521e;
+        }
+        .option-btn.wrong {
+            background: #b13e3e;
+            border-color: #852b2b;
+            color: white;
+            box-shadow: 0 4px 0 #6a1f1f;
+        }
+        .option-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: scale(0.97);
+        }
+        .feedback-area {
+            background: #eaf0fc;
+            border-radius: 40px;
+            padding: 14px 24px;
+            margin: 6px 0 18px 0;
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #1b3155;
+            min-height: 4rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: 1px solid #c7d7f0;
+        }
+        .feedback-area .emoji-fb {
+            font-size: 2rem;
+        }
+        .score-box {
+            background: #0d1d3b;
+            color: white;
+            border-radius: 60px;
+            padding: 10px 22px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            font-size: 1.2rem;
+            box-shadow: inset 0 -3px 0 #5273a8;
+        }
+        .action-bar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 10px;
+            gap: 16px;
+        }
+        .reset-btn {
+            background: #fb8b2c;
+            border: none;
+            border-radius: 60px;
+            padding: 12px 32px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: #151f33;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            box-shadow: 0 6px 0 #a05d1c;
+            transition: 0.08s linear;
+            border: 1px solid #fcaa56;
+        }
+        .reset-btn:hover {
+            background: #ff9f40;
+            transform: scale(0.97);
+            box-shadow: 0 3px 0 #a05d1c;
+        }
+        .reset-btn:active {
+            transform: translateY(5px);
+            box-shadow: 0 1px 0 #a05d1c;
+        }
+        .counter {
+            background: #dfe9fc;
+            border-radius: 60px;
+            padding: 6px 20px;
+            font-weight: 600;
+            color: #1b2d50;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .footer {
+            margin-top: 24px;
+            text-align: center;
+            color: #41618b;
+            font-weight: 500;
+            font-size: 0.9rem;
+            border-top: 1px solid #ccdaf0;
+            padding-top: 18px;
+        }
+        @media (max-width: 480px) {
+            .quiz-card { padding: 1.5rem; }
+            .expression { font-size: 2.6rem; }
+            .options-grid { gap: 10px; }
+            .option-btn { font-size: 1.3rem; padding: 14px 4px; }
+            .action-bar { flex-direction: column; align-items: stretch; }
+            .reset-btn { justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+<div class="quiz-card" role="main">
+    <h1>
+        🧮 Somar
+        <small>quiz</small>
+    </h1>
+    <div class="subhead">⚡ clique na resposta correta</div>
+
+    <div class="question-box">
+        <div class="expression" id="questionDisplay">
+            <span id="num1">12</span> + <span id="num2">8</span> = ?
+        </div>
+    </div>
+
+    <div class="options-grid" id="optionsContainer">
+        <button class="option-btn" data-index="0">20</button>
+        <button class="option-btn" data-index="1">18</button>
+        <button class="option-btn" data-index="2">22</button>
+        <button class="option-btn" data-index="3">16</button>
+    </div>
+
+    <div class="feedback-area" id="feedbackArea">
+        <span class="emoji-fb">💡</span>
+        <span id="feedbackText">Selecione uma opção</span>
+    </div>
+
+    <div class="action-bar">
+        <div class="score-box">
+            <span>🏆</span> <span id="scoreDisplay">0</span>
+        </div>
+        <div class="counter">
+            <span>📌</span> <span id="questionCounter">1 / 10</span>
+        </div>
+        <button class="reset-btn" id="resetBtn">⟳ Nova rodada</button>
+    </div>
+    <div class="footer">➕ cada resposta certa +1 ponto • 10 perguntas</div>
+</div>
+
+<script>
+    (function() {
+        // ----- Elementos DOM -----
+        const num1Span = document.getElementById('num1');
+        const num2Span = document.getElementById('num2');
+        const optionsBtns = document.querySelectorAll('.option-btn');
+        const feedbackText = document.getElementById('feedbackText');
+        const feedbackArea = document.getElementById('feedbackArea');
+        const scoreSpan = document.getElementById('scoreDisplay');
+        const questionCounterSpan = document.getElementById('questionCounter');
+        const resetBtn = document.getElementById('resetBtn');
+
+        // ----- Estado do quiz -----
+        let currentQuestion = { num1: 0, num2: 0, correctAnswer: 0, options: [] };
+        let score = 0;
+        let questionIndex = 0;           // 0..9 (10 perguntas)
+        const MAX_QUESTIONS = 10;
+        let isAnswered = false;          // bloqueia nova resposta até próxima pergunta
+        let questionHistory = [];         // armazena objetos { num1, num2, correct }
+
+        // ----- Gerar número aleatório entre min e max (inclusivo) -----
+        function randomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        // ----- Gerar 4 opções (uma correta + 3 distratores) -----
+        function generateOptions(correct) {
+            let opts = new Set();
+            opts.add(correct);
+            // tentativa de gerar 3 opções diferentes, próximas do valor correto
+            let attempts = 0;
+            while (opts.size < 4 && attempts < 200) {
+                // deslocamento entre -7 e +7 (evita números muito distantes)
+                let offset = randomInt(-7, 7);
+                // evitar zero ou valores muito negativos (soma sempre positiva)
+                let candidate = correct + offset;
+                if (candidate >= 0 && candidate <= 30 && !opts.has(candidate)) {
+                    opts.add(candidate);
+                }
+                attempts++;
+                // se não conseguir, força com valores manuais
+                if (attempts > 150) {
+                    // fallback: gerar números aleatórios 0..25
+                    let fallback = randomInt(0, 25);
+                    if (!opts.has(fallback) && fallback !== correct) {
+                        opts.add(fallback);
+                    }
+                }
+            }
+            // converter para array e embaralhar
+            let optArray = Array.from(opts);
+            // se ainda faltar opções (caso raro) preencher com números aleatórios
+            while (optArray.length < 4) {
+                let extra = randomInt(0, 25);
+                if (!optArray.includes(extra)) {
+                    optArray.push(extra);
+                }
+            }
+            // embaralhar (Fisher-Yates)
+            for (let i = optArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [optArray[i], optArray[j]] = [optArray[j], optArray[i]];
+            }
+            return optArray;
+        }
+
+        // ----- Gerar nova pergunta (não repetida) -----
+        function generateQuestion() {
+            let num1, num2, correct;
+            let duplicate = true;
+            let attemptsLimit = 0;
+            // Evitar repetição de perguntas (mesmo par) dentro da mesma rodada
+            while (duplicate && attemptsLimit < 100) {
+                num1 = randomInt(0, 20);
+                num2 = randomInt(0, 20);
+                correct = num1 + num2;
+                duplicate = questionHistory.some(q => q.num1 === num1 && q.num2 === num2);
+                attemptsLimit++;
+                // se estourar tentativas, aceita a pergunta mesmo repetida
+                if (attemptsLimit > 90) duplicate = false;
+            }
+            // guardar no histórico
+            questionHistory.push({ num1, num2, correct });
+
+            const options = generateOptions(correct);
+            return { num1, num2, correctAnswer: correct, options };
+        }
+
+        // ----- Atualizar interface com a pergunta atual -----
+        function renderQuestion() {
+            const q = currentQuestion;
+            num1Span.textContent = q.num1;
+            num2Span.textContent = q.num2;
+            // preencher botões
+            optionsBtns.forEach((btn, idx) => {
+                btn.textContent = q.options[idx] ?? '?';
+                btn.className = 'option-btn';  // reset classes
+                btn.disabled = false;
+            });
+            // atualizar contador
+            questionCounterSpan.textContent = `${questionIndex + 1} / ${MAX_QUESTIONS}`;
+            // feedback limpo
+            feedbackText.textContent = 'Selecione uma opção';
+            feedbackArea.querySelector('.emoji-fb').textContent = '💡';
+            feedbackArea.style.background = '#eaf0fc';
+            isAnswered = false;
+        }
+
+        // ----- Carregar próxima pergunta ou finalizar -----
+        function loadNextQuestion() {
+            if (questionIndex >= MAX_QUESTIONS - 1) {
+                // Fim do quiz
+                finishQuiz();
+                return;
+            }
+            questionIndex++;
+            currentQuestion = generateQuestion();
+            renderQuestion();
+        }
+
+        // ----- Finalizar quiz com mensagem e bloquear -----
+        function finishQuiz() {
+            // desabilitar todos os botões
+            optionsBtns.forEach(btn => {
+                btn.disabled = true;
+                btn.className = 'option-btn';
+            });
+            // mostrar mensagem de fim
+            feedbackText.textContent = `🏁 Quiz finalizado! Você acertou ${score} de ${MAX_QUESTIONS}.`;
+            feedbackArea.querySelector('.emoji-fb').textContent = '🎉';
+            feedbackArea.style.background = '#d3e3ff';
+            questionCounterSpan.textContent = `${MAX_QUESTIONS} / ${MAX_QUESTIONS}`;
+            isAnswered = true; // impede clique
+        }
+
+        // ----- Reset total (nova rodada) -----
+        function resetQuiz() {
+            // resetar estado
+            score = 0;
+            questionIndex = 0;
+            questionHistory = [];
+            isAnswered = false;
+            scoreSpan.textContent = '0';
+
+            // gerar primeira pergunta
+            currentQuestion = generateQuestion();
+            renderQuestion();
+            // ativar botões
+            optionsBtns.forEach(btn => btn.disabled = false);
+            feedbackText.textContent = 'Nova rodada! Boa sorte 🍀';
+            feedbackArea.querySelector('.emoji-fb').textContent = '✨';
+            feedbackArea.style.background = '#eaf0fc';
+            // contador
+            questionCounterSpan.textContent = `1 / ${MAX_QUESTIONS}`;
+            // remover destaques de botões
+            optionsBtns.forEach(btn => btn.className = 'option-btn');
+        }
+
+        // ----- Processar resposta do usuário -----
+        function handleOptionClick(event) {
+            const btn = event.currentTarget;
+            // se já respondeu ou jogo finalizado, ignora
+            if (isAnswered || btn.disabled) return;
+
+            const selectedValue = parseInt(btn.textContent, 10);
+            const correct = currentQuestion.correctAnswer;
+            const isCorrect = (selectedValue === correct);
+
+            // marcar como respondido
+            isAnswered = true;
+
+            // desabilitar todos os botões
+            optionsBtns.forEach(b => b.disabled = true);
+
+            // destacar botões: correto / errado
+            optionsBtns.forEach(b => {
+                const val = parseInt(b.textContent, 10);
+                if (val === correct) {
+                    b.classList.add('correct');
+                } else if (val === selectedValue && !isCorrect) {
+                    b.classList.add('wrong');
+                }
+            });
+
+            // Atualizar pontuação
+            if (isCorrect) {
+                score++;
+                scoreSpan.textContent = score;
+                feedbackText.textContent = '✅ Correto! +1 ponto';
+                feedbackArea.querySelector('.emoji-fb').textContent = '🎯';
+                feedbackArea.style.background = '#d4edda';
+            } else {
+                feedbackText.textContent = `❌ Errado! A resposta certa era ${correct}.`;
+                feedbackArea.querySelector('.emoji-fb').textContent = '😓';
+                feedbackArea.style.background = '#f8d7da';
+            }
+
+            // Após 1.2s carregar próxima pergunta ou finalizar
+            setTimeout(() => {
+                if (questionIndex >= MAX_QUESTIONS - 1) {
+                    finishQuiz();
+                } else {
+                    loadNextQuestion();
+                }
+            }, 1200);
+        }
+
+        // ----- Inicializar o quiz -----
+        function initQuiz() {
+            // reset completo
+            score = 0;
+            questionIndex = 0;
+            questionHistory = [];
+            isAnswered = false;
+            scoreSpan.textContent = '0';
+            currentQuestion = generateQuestion();
+            renderQuestion();
+            optionsBtns.forEach(btn => {
+                btn.disabled = false;
+                btn.className = 'option-btn';
+            });
+            feedbackText.textContent = 'Clique na resposta certa';
+            feedbackArea.querySelector('.emoji-fb').textContent = '🧠';
+            feedbackArea.style.background = '#eaf0fc';
+            questionCounterSpan.textContent = `1 / ${MAX_QUESTIONS}`;
+        }
+
+        // ----- Adicionar event listeners -----
+        optionsBtns.forEach(btn => {
+            btn.addEventListener('click', handleOptionClick);
+        });
+
+        resetBtn.addEventListener('click', function() {
+            resetQuiz();
+        });
+
+        // Iniciar
+        initQuiz();
+    })();
+</script>
+</body>
+</html>
